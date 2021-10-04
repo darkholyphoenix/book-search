@@ -1,36 +1,45 @@
-const { gql } = require('apollo-server-express');
+const { AuthenticationError } = require('apollo-server-express');
+const { User, Thought } = require('../models');
+const { signToken } = require('../utils/auth');
 
-const typeDefs = gql`
-type User {
-    _id: ID
-    username: String
-    email: String
-    bookCount: Int
-    savedBooks: [Book]
-  }
+const resolvers = {
+  Query: {
+    me: async (parent, args, context) => {
+      if (context.user) {
+        const userData = await User.findOne({ _id: context.user._id })
+          .select('-__v -password')
 
-  type Book {
-    bookId: ID
-    authors: [String]
-    description: String
-    title: String
-    image: Int
-    link: [Reaction]
-  }
+        return userData;
+      }
 
-  type Auth{
-    token : ID!
-    user: User
-  }
+      throw new AuthenticationError('Not logged in');
+    },
+  },
 
-  type Query {
-      me: User
-  }
+  Mutation: {
+    addUser: async (parent, args) => {
+      const user = await User.create(args);
+      const token = signToken(user);
 
-  type Mutation {
-    login(email: String!, password: String!): Auth
-    addUser(username: String!, email: String!, password: String!): Auth
-    saveBook:([author])
-    removeBook:(bookId: ID!):User
+      return { token, user };
+    },
+    login: async (parent, { email, password }) => {
+      const user = await User.findOne({ email });
+
+      if (!user) {
+        throw new AuthenticationError('Incorrect credentials');
+      }
+
+      const correctPw = await user.isCorrectPassword(password);
+
+      if (!correctPw) {
+        throw new AuthenticationError('Incorrect credentials');
+      }
+
+      const token = signToken(user);
+      return { token, user };
+    },
   }
-`;
+};
+
+module.exports = resolvers;
