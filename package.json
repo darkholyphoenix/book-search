@@ -4,9 +4,12 @@
   "description": "",
   "main": "server/server.js",
   "scripts": {
-    "start": "node server/server.js",
+    "start": "if-env NODE_ENV=production && npm run start:prod || npm run start:dev",
+    "start:prod": "cd server && npm start",
     "start:dev": "concurrently \"cd server && npm run watch\" \"cd client && npm start\"",
     "install": "cd server && npm i && cd ../client && npm i",
+    "seed": "cd server && npm run seed",
+    "heroku-postbuild": "cd client && npm run build",
     "build": "cd client && npm run build"
   },
   "keywords": [],
@@ -24,8 +27,7 @@
   },
   "homepage": "https://github.com/darkholyphoenix/book-search#readme",
   "dependencies": {
+    "apollo-boost": "^0.4.9",
     "nodemon": "^2.0.13"
   }
 }
-
-

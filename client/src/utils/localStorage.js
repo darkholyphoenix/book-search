@@ -27,4 +27,4 @@ export const removeBookId = (bookId) => {
   localStorage.setItem('saved_books', JSON.stringify(updatedSavedBookIds));
 
   return true;
-};
+}; 
