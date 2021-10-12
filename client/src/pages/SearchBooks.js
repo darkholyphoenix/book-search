@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useMutation } from 'react';
+import React, { useState, useEffect} from 'react';
 import { Jumbotron, Container, Col, Form, Button, Card, CardColumns } from 'react-bootstrap';
 
 
 import Auth from '../utils/auth';
 import { searchGoogleBooks } from '../utils/API';
 import { saveBookIds, getSavedBookIds } from '../utils/localStorage';
+import { useMutation } from '@apollo/react-hooks'
 import { SAVE_BOOK } from '../utils/mutations';
 
 const SearchBooks = () => {
@@ -70,11 +71,10 @@ const SearchBooks = () => {
       return false;
     }
 
-    const {authors, bookId, description, image, title, link} = bookToSave
 
     try {
       await saveBook({
-        variables: { authors, bookId, description, image, title, link }
+        variables: { bookData: {...bookToSave} }
       });
 
       // if book successfully saves to user's account, save book id to state
