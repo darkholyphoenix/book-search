@@ -31,7 +31,7 @@ console.log(`Use GraphQL at http://locahost:${PORT}${server.graphqlPath}`);
 // initialize Apollo server
 startServer();
 
-// ******MAKE TRUE LATER********
+
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
